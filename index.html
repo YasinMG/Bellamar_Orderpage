@@ -1,4 +1,10 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#FFFFFF">
 <title>Заказ Stomatolog</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,6 +73,7 @@ h1 { margin: 0; font-size: clamp(28px, 6.5vw, 40px); line-height: 1.1; font-weig
 .catalog { list-style: none; margin: 0; padding: 0; }
 .cat-label { padding: 22px 0 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
 .product { border-bottom: 1px solid var(--line); }
+.product.focus > .phead { animation: flash 1.6s ease-out; }
 
 /* the one product row (header) — same grid for every product */
 .phead { width: 100%; display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 0; min-height: 68px; background: none; border: 0; text-align: left; border-radius: 0; }
@@ -129,6 +136,11 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
 .vrow.flash { animation: flash .8s ease-out; }
 @keyframes flash { from { background: var(--red-soft); } to { background: transparent; } }
 
+.skel { display: grid; grid-template-columns: 44px 1fr; grid-template-rows: auto auto; column-gap: 14px; row-gap: 8px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.skel span { border-radius: 8px; background: linear-gradient(90deg, var(--soft) 0%, var(--soft-2) 50%, var(--soft) 100%); background-size: 200% 100%; animation: shimmer 1.2s linear infinite; }
+.skel span:first-child { grid-row: 1 / 3; height: 44px; border-radius: 12px; }
+.skel span:last-child { height: 14px; width: 60%; align-self: center; }
+@keyframes shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 .noresult { padding: 32px 0; display: grid; gap: 12px; justify-items: start; color: var(--muted); }
 .linkbtn { border: 0; background: none; padding: 0; color: var(--red); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 
@@ -197,6 +209,8 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
 @keyframes rot { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
+</head>
+<body>
 
 <div class="app">
   <header class="top">
@@ -216,7 +230,15 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
         </div>
         <div class="chips" id="cats" role="group" aria-label="Категории"></div>
       </div>
-      <ul class="catalog" id="catalog" aria-label="Каталог"></ul>
+      <ul class="catalog" id="catalog" aria-label="Каталог" aria-busy="true">
+        <li class="skel"><span></span><span></span></li><li class="skel"><span></span><span></span></li>
+        <li class="skel"><span></span><span></span></li><li class="skel"><span></span><span></span></li>
+        <li class="skel"><span></span><span></span></li>
+      </ul>
+      <div class="noresult" id="loaderr" hidden>
+        <span>Не удалось загрузить каталог. Проверьте интернет и попробуйте ещё раз.</span>
+        <button type="button" class="linkbtn" id="retryLoad">Повторить</button>
+      </div>
       <div class="noresult" id="noresult" hidden>
         <span id="noresultText"></span>
         <button type="button" class="linkbtn" id="resetFilter">Показать все товары</button>
@@ -244,7 +266,7 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
           <span class="sum" id="ssum">0 $</span>
           <span class="note" id="snote" hidden>+ позиции, цену которых уточнит менеджер</span>
         </div>
-        <button type="submit" class="btn" id="submit">Оформить заказ</button>
+        <button type="submit" class="btn" id="submit" disabled>Оформить заказ</button>
         <p class="formerr" id="formerr" role="alert" hidden></p>
       </div>
     </aside>
@@ -266,12 +288,21 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
 
 <script>
 (function () {
-  // n8n вставляет сюда каталог из ноды «📦 Catalog». В предпросмотре null → демо-данные, заказ не отправляется.
-  var DATA = /*__PAGE_DATA__*/null;
-  var DEMO = !DATA;
-  if (DEMO) {
+  // ============================================================
+  //  Подключение к n8n. Каталог грузится из n8n, заказ отправляется в n8n.
+  //  liveHosts — адреса, где страница работает «по-настоящему».
+  //  На других адресах (локально, предпросмотр) при недоступном n8n — демо-режим.
+  // ============================================================
+  var CONFIG = {
+    api: "https://n8n.srv1258464.hstgr.cloud/webhook",
+    catalogPath: "stomatolog-catalog",
+    submitPath: "stomatolog-zakaz-submit",
+    liveHosts: ["bellamarorder.vercel.app"]
+  };
+  var DATA = null, DEMO = false;
+  function demoData() {
     var SUT = [{ key: "size", label: "Размер", values: ["3/0", "4/0", "5/0", "6/0"], opt: "{v}", fmt: "размер {v}" }];
-    DATA = {
+    return {
       logoUrl: "",
       categories: ["Хирургия", "Детская стоматология", "Имплантология", "Терапия", "Протезирование", "Анестезия", "Инструменты", "Расходные материалы"],
       products: [
@@ -295,7 +326,27 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
       ]
     };
   }
+  function isLive() { return CONFIG.liveHosts.indexOf(location.hostname) > -1; }
+  function boot() {
+    var err = document.getElementById("loaderr"); err.hidden = true;
+    document.getElementById("catalog").hidden = false;
+    var ctrl = new AbortController(), timer = setTimeout(function () { ctrl.abort(); }, 15000);
+    fetch(CONFIG.api + "/" + CONFIG.catalogPath, { cache: "no-store", signal: ctrl.signal })
+      .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(function (d) {
+        clearTimeout(timer);
+        if (!d || !Array.isArray(d.products) || !d.products.length) throw new Error("empty catalog");
+        DATA = d; main();
+      })
+      .catch(function () {
+        clearTimeout(timer);
+        if (isLive()) { document.getElementById("catalog").hidden = true; err.hidden = false; return; }
+        DATA = demoData(); DEMO = true; main();
+      });
+  }
+  document.getElementById("retryLoad").onclick = boot;
 
+  function main() {
   // ---------- config & helpers
   var LIST_MAX = 12;            // до стольких вариантов — показываем все сразу; больше — выбор через списки
   var STORE_KEY = "stomatolog.clinic.v1";
@@ -502,7 +553,7 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
     return { ok: base || variant, viaVariant: variant };
   }
   function renderCatalog() {
-    var list = $("catalog"); list.textContent = ""; heads = {};
+    var list = $("catalog"); list.textContent = ""; list.removeAttribute("aria-busy"); heads = {};
     var q = norm(state.q.trim()), shown = 0;
     catsInUse().forEach(function (c) {
       if (state.cat && state.cat !== c) return;
@@ -572,7 +623,6 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
 
   // ---------- submit
   var chatId = (new URLSearchParams(location.search).get("chatId") || "").replace(/[^\d-]/g, "");
-  function submitUrl() { return location.pathname.replace(/\/+$/, "").replace(/[^\/]*$/, "stomatolog-zakaz-submit"); }
   $("orderForm").addEventListener("submit", function (e) {
     e.preventDefault();
     var lines = collectLines();
@@ -587,7 +637,13 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
     var done = function () { btn.disabled = false; btn.textContent = "Оформить заказ"; };
     if (DEMO) { setTimeout(function () { done(); showDone(lines); }, 700); return; }
     var ctrl = new AbortController(), timer = setTimeout(function () { ctrl.abort(); }, 30000);
-    fetch(submitUrl(), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), signal: ctrl.signal })
+    var url = CONFIG.api + "/" + CONFIG.submitPath, body = JSON.stringify(payload);
+    fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: body, signal: ctrl.signal })
+      .catch(function (err) {
+        if (err && err.name === "AbortError") throw err;
+        // запасной путь без CORS-preflight
+        return fetch(url, { method: "POST", headers: { "Content-Type": "text/plain;charset=UTF-8" }, body: body, signal: ctrl.signal });
+      })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (res) {
         clearTimeout(timer); done();
@@ -608,8 +664,21 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
   // ---------- init
   if (DEMO) $("demoNote").hidden = false;
   if (DATA.logoUrl) { var img = el("img"); img.src = DATA.logoUrl; img.alt = "Логотип"; $("logoSlot").textContent = ""; $("logoSlot").append(img); }
+  // Ссылки из Telegram-бота: ?product=<id> открывает товар, ?cat=<категория> включает фильтр
+  var qp = new URLSearchParams(location.search), focusId = qp.get("product"), focusCat = qp.get("cat");
+  if (focusCat && catsInUse().indexOf(focusCat) > -1) state.cat = focusCat;
+  if (focusId && byId[focusId] && byId[focusId].dims) state.open.add(focusId);
   renderCats(); renderCatalog(); renderSummary(); loadClinic();
+  $("submit").disabled = false;
+  if (focusId && $("prod-" + focusId)) {
+    var target = $("prod-" + focusId);
+    setTimeout(function () { target.scrollIntoView({ block: "center" }); target.classList.add("focus"); }, 60);
+  }
+  }
+
+  boot();
 })();
 </script>
 
-</body></html>
+</body>
+</html>
