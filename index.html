@@ -1,0 +1,615 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Заказ Stomatolog</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap&subset=cyrillic">
+<style>
+/* Layout: one catalog list built from a single product component (simple or expandable), a sticky search/filter bar above it, clinic data below; receipt column on wide screens, bottom bar on phones. Existing palette: white, greys, red for action and selection only. */
+:root {
+  --bg: #FFFFFF;
+  --soft: #F4F4F5;
+  --soft-2: #ECECEE;
+  --panel: #FAFAFA;
+  --line: #E6E6E9;
+  --ink: #1E1E22;
+  --ink-2: #3A3A40;
+  --muted: #6D6D75;
+  --red: #D21F2D;
+  --red-hover: #B71826;
+  --red-soft: #FDEFF0;
+  --grey-mark: #A2A5AC;
+  --on-red: #FFFFFF;
+  --bad: #C0182A;
+  --f: "Golos Text", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --r: 12px;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f); font-size: 16px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+
+.app { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 20px 150px; }
+
+/* header + logo slot */
+.top { display: grid; gap: 14px; padding-bottom: 20px; max-width: 680px; }
+.logo-slot { height: 36px; display: flex; align-items: center; }
+.logo-slot img { max-height: 36px; max-width: 180px; object-fit: contain; }
+.logo-ph { height: 36px; width: 132px; border: 1.5px dashed var(--line); border-radius: 8px; display: grid; place-items: center; color: var(--grey-mark); font-size: 13px; }
+h1 { margin: 0; font-size: clamp(28px, 6.5vw, 40px); line-height: 1.1; font-weight: 700; letter-spacing: -.025em; text-wrap: balance; }
+.lede { margin: 0; color: var(--muted); max-width: 56ch; }
+.demo { margin: 0; padding: 10px 14px; border-radius: var(--r); background: var(--soft); color: var(--muted); font-size: 14px; }
+
+.grid { display: grid; align-items: start; }
+@media (min-width: 980px) { .grid { grid-template-columns: minmax(0, 1fr) 340px; gap: 56px; } }
+.col { min-width: 0; }
+
+/* toolbar: search + categories */
+.toolbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 15; background: var(--bg); display: grid; gap: 10px; padding-block: 12px; margin-inline: -4px; padding-inline: 4px; border-bottom: 1px solid var(--line); }
+.search { position: relative; }
+.search svg { position: absolute; left: 14px; top: 50%; width: 18px; height: 18px; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+.search input { width: 100%; height: 46px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--soft); padding: 0 16px 0 42px; }
+.search input:hover { border-color: var(--grey-mark); }
+.search input:focus { background: var(--bg); border-color: var(--ink-2); outline: none; }
+.chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; padding-right: 24px; -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent); }
+.chips::-webkit-scrollbar { display: none; }
+.chips button { flex: none; height: 34px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--bg); font-size: 14px; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
+.chips button:hover { border-color: var(--grey-mark); }
+.chips button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+
+/* catalog list */
+.catalog { list-style: none; margin: 0; padding: 0; }
+.cat-label { padding: 22px 0 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.product { border-bottom: 1px solid var(--line); }
+
+/* the one product row (header) — same grid for every product */
+.phead { width: 100%; display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 12px 0; min-height: 68px; background: none; border: 0; text-align: left; border-radius: 0; }
+button.phead { cursor: pointer; }
+button.phead:hover .pname { color: var(--red); }
+.ico { position: relative; width: 44px; height: 44px; border-radius: 12px; background: var(--soft); color: var(--ink-2); display: grid; place-items: center; transition: background-color .2s, color .2s; }
+.ico svg { width: 22px; height: 22px; }
+.ico .mark { position: absolute; right: -2px; bottom: -2px; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--bg); }
+.ptext { min-width: 0; display: grid; gap: 1px; }
+.pname { font-weight: 500; line-height: 1.3; transition: color .15s; overflow-wrap: anywhere; }
+.pmeta { color: var(--muted); font-size: 14px; line-height: 1.35; font-variant-numeric: tabular-nums; }
+.product.sel .ico { background: var(--red-soft); color: var(--red); }
+.product.sel .pname { font-weight: 600; }
+
+.pright { display: flex; align-items: center; gap: 10px; }
+.pill { height: 28px; padding: 0 10px; border-radius: 999px; background: var(--soft); color: var(--muted); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.product.sel .pill { background: var(--red); color: var(--on-red); }
+@media (max-width: 520px) { .pill .extra { display: none; } }
+.chev { width: 32px; height: 32px; border-radius: 999px; display: grid; place-items: center; color: var(--muted); transition: transform .25s var(--ease), background-color .15s; }
+button.phead:hover .chev { background: var(--soft); }
+.chev svg { width: 16px; height: 16px; }
+.product.open .chev { transform: rotate(180deg); }
+
+/* qty control: "+" when 0, stepper when > 0 (same everywhere) */
+.qc { display: inline-flex; }
+.addbtn { width: 40px; height: 40px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--bg); display: grid; place-items: center; color: var(--ink); transition: border-color .15s, background-color .15s, color .15s; }
+.addbtn:hover { border-color: var(--red); color: var(--red); }
+.addbtn svg { width: 16px; height: 16px; }
+.stepper { display: inline-grid; grid-template-columns: 40px 44px 40px; align-items: center; height: 40px; border-radius: 999px; background: var(--red-soft); }
+.stepper button { height: 40px; border: 0; background: transparent; border-radius: 999px; font-size: 20px; line-height: 1; display: grid; place-items: center; color: var(--red); }
+.stepper button:hover { background: rgba(210, 31, 45, .1); }
+.stepper input { width: 100%; border: 0; background: transparent; text-align: center; font-weight: 700; color: var(--red); font-variant-numeric: tabular-nums; padding: 0; -moz-appearance: textfield; }
+.stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* expandable panel */
+.panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .28s var(--ease); }
+.product.open .panel { grid-template-rows: 1fr; }
+.pinner { overflow: hidden; min-height: 0; }
+.pbox { margin: 0 0 14px 58px; padding: 6px 14px; border-radius: var(--r); background: var(--panel); border: 1px solid var(--line); }
+@media (max-width: 520px) { .pbox { margin-left: 0; } }
+.vrows { list-style: none; margin: 0; padding: 0; }
+.vrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 8px 0; min-height: 56px; }
+.vrow + .vrow { border-top: 1px solid var(--line); }
+.vlabel { display: flex; align-items: center; gap: 10px; min-width: 0; flex-wrap: wrap; }
+.vcode { font-weight: 600; font-variant-numeric: tabular-nums; }
+.vsub { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.vrow.on .vcode { color: var(--red); }
+.picker { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)) auto; gap: 8px; align-items: end; padding: 8px 0 12px; border-bottom: 1px solid var(--line); }
+.picker label { display: grid; gap: 4px; min-width: 0; }
+.picker label span { font-size: 12px; font-weight: 600; color: var(--muted); }
+select, .input { width: 100%; height: 44px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--bg); padding: 0 12px; min-width: 0; }
+select { appearance: none; -webkit-appearance: none; padding-right: 34px; font-weight: 600;
+  background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position: calc(100% - 17px) 19px, calc(100% - 12px) 19px; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; }
+select:hover, .input:hover { border-color: var(--grey-mark); }
+.pickadd { height: 44px; padding: 0 16px; border-radius: 10px; border: 0; background: var(--ink); color: var(--bg); font-weight: 600; white-space: nowrap; }
+.pickadd:hover { background: var(--ink-2); }
+@media (max-width: 420px) { .picker { grid-template-columns: 1fr 1fr; } .pickadd { grid-column: 1 / -1; } }
+.vempty { margin: 0; padding: 12px 0; color: var(--muted); font-size: 14px; }
+.vrow.flash { animation: flash .8s ease-out; }
+@keyframes flash { from { background: var(--red-soft); } to { background: transparent; } }
+
+.noresult { padding: 32px 0; display: grid; gap: 12px; justify-items: start; color: var(--muted); }
+.linkbtn { border: 0; background: none; padding: 0; color: var(--red); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+/* clinic */
+.sec { padding-block: 32px 8px; display: grid; gap: 16px; }
+.sec h2 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.01em; }
+.fgrid { display: grid; gap: 14px; }
+@media (min-width: 600px) { .fgrid { grid-template-columns: 1fr 1fr; } .fgrid .wide { grid-column: 1 / -1; } }
+.field { display: grid; gap: 6px; min-width: 0; }
+.flabel { font-size: 13px; font-weight: 600; color: var(--muted); }
+.fgrid .input { height: 48px; }
+.phone { display: flex; }
+.phone .pre { display: grid; place-items: center; padding: 0 12px; border: 1.5px solid var(--line); border-right: 0; border-radius: 10px 0 0 10px; background: var(--soft); font-weight: 600; }
+.phone .input { border-radius: 0 10px 10px 0; font-variant-numeric: tabular-nums; }
+.field.err .input, .field.err .pre { border-color: var(--bad); }
+.ferr { color: var(--bad); font-size: 13px; }
+.check { display: flex; gap: 10px; align-items: center; font-size: 14px; color: var(--muted); }
+.check input { width: 18px; height: 18px; accent-color: var(--red); margin: 0; }
+
+/* summary */
+.summary { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: var(--bg); border-top: 1px solid var(--line);
+  padding-top: 12px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.sinner { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; align-items: center; }
+.stitle, .slines { display: none; }
+.stotal { display: grid; min-width: 0; }
+.stotal .lbl { font-size: 13px; color: var(--muted); }
+.stotal .sum { font-weight: 700; font-size: 18px; line-height: 1.2; letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
+.stotal .note { font-size: 12px; color: var(--muted); }
+.btn { height: 48px; border: 0; border-radius: 999px; padding: 0 24px; font-weight: 600; background: var(--red); color: var(--on-red); display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: background-color .15s, transform .1s; }
+.btn:hover { background: var(--red-hover); }
+.btn:active { transform: scale(.98); }
+.btn:disabled { opacity: .5; cursor: default; transform: none; background: var(--red); }
+.btn.line { background: var(--bg); color: var(--ink); border: 1.5px solid var(--line); }
+.btn.line:hover { border-color: var(--ink); }
+.formerr { grid-column: 1 / -1; margin: 0; color: var(--bad); font-size: 14px; }
+@media (min-width: 980px) {
+  .summary { position: sticky; top: 24px; left: auto; right: auto; bottom: auto; border: 0; border-radius: 16px; background: var(--soft); padding: 24px; }
+  .sinner { grid-template-columns: 1fr; gap: 16px; }
+  .stitle { display: block; margin: 0; font-size: 19px; font-weight: 700; }
+  .slines { display: grid; gap: 10px; list-style: none; margin: 0; padding: 0 0 16px; border-bottom: 1px solid var(--soft-2); max-height: 50vh; overflow: auto; }
+  .slines li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; font-size: 14px; }
+  .slines li span:last-child { color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .slines .none { grid-template-columns: 1fr; color: var(--muted); }
+  .stotal .sum { font-size: 26px; }
+  .summary .btn { width: 100%; }
+  .app { padding-block: 36px 56px; }
+}
+
+/* done */
+.done { position: fixed; inset: 0; z-index: 40; background: var(--bg); overflow: auto; padding-top: calc(40px + env(safe-area-inset-top, 0px)); padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px)); padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.dinner { max-width: 560px; margin: 0 auto; display: grid; gap: 18px; }
+.seal { width: 64px; height: 64px; border-radius: 50%; background: var(--red); color: var(--on-red); display: grid; place-items: center; animation: pop .45s cubic-bezier(.2, 1.4, .4, 1); }
+.seal svg { width: 30px; height: 30px; }
+@keyframes pop { from { transform: scale(.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.done h2 { margin: 0; font-size: clamp(28px, 6.5vw, 38px); font-weight: 700; letter-spacing: -.02em; line-height: 1.1; }
+.done p { margin: 0; color: var(--muted); }
+.receipt { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding-block: 16px; display: grid; gap: 10px; }
+.receipt ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.receipt li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; font-size: 15px; }
+.receipt li span:last-child { color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.receipt .tot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-weight: 700; padding-top: 8px; }
+.dact { display: flex; gap: 10px; flex-wrap: wrap; }
+.dact a { text-decoration: none; }
+.spin { width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid currentColor; border-right-color: transparent; animation: rot .7s linear infinite; }
+@keyframes rot { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="app">
+  <header class="top">
+    <!-- Логотип: укажите logoUrl в ноде «📦 Catalog» — здесь появится картинка вместо плейсхолдера -->
+    <div class="logo-slot" id="logoSlot"><div class="logo-ph">Логотип</div></div>
+    <h1>Заказ материалов для клиники</h1>
+    <p class="lede">Выберите товары и количество. Менеджер проверит заказ и пришлёт подтверждение в Telegram.</p>
+    <p class="demo" id="demoNote" hidden>Это предпросмотр страницы: заказ никуда не отправляется.</p>
+  </header>
+
+  <form class="grid" id="orderForm" novalidate>
+    <div class="col">
+      <div class="toolbar">
+        <div class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+          <input id="q" type="search" placeholder="Поиск: товар, размер, номер…" aria-label="Поиск по каталогу" autocomplete="off">
+        </div>
+        <div class="chips" id="cats" role="group" aria-label="Категории"></div>
+      </div>
+      <ul class="catalog" id="catalog" aria-label="Каталог"></ul>
+      <div class="noresult" id="noresult" hidden>
+        <span id="noresultText"></span>
+        <button type="button" class="linkbtn" id="resetFilter">Показать все товары</button>
+      </div>
+
+      <section class="sec" aria-labelledby="h-clinic">
+        <h2 id="h-clinic">Клиника и доставка</h2>
+        <div class="fgrid">
+          <div class="field" id="f-name"><label class="flabel" for="name">Ваше имя</label><input class="input" id="name" autocomplete="name" placeholder="Азиза Акимова"></div>
+          <div class="field" id="f-phone"><label class="flabel" for="phone">Телефон</label>
+            <div class="phone"><span class="pre">+998</span><input class="input" id="phone" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="90 123 45 67"></div></div>
+          <div class="field wide" id="f-clinic"><label class="flabel" for="clinic">Название клиники</label><input class="input" id="clinic" autocomplete="organization" placeholder="Например, Dental Clinic Smile"></div>
+          <div class="field wide" id="f-address"><label class="flabel" for="address">Адрес доставки</label><input class="input" id="address" autocomplete="street-address" placeholder="Город, улица, дом"></div>
+          <label class="check wide"><input type="checkbox" id="remember" checked> Запомнить данные клиники на этом устройстве</label>
+        </div>
+      </section>
+    </div>
+
+    <aside class="summary" aria-label="Итог заказа">
+      <div class="sinner">
+        <h2 class="stitle">Ваш заказ</h2>
+        <ul class="slines" id="slines"></ul>
+        <div class="stotal">
+          <span class="lbl" id="scount">Ничего не выбрано</span>
+          <span class="sum" id="ssum">0 $</span>
+          <span class="note" id="snote" hidden>+ позиции, цену которых уточнит менеджер</span>
+        </div>
+        <button type="submit" class="btn" id="submit">Оформить заказ</button>
+        <p class="formerr" id="formerr" role="alert" hidden></p>
+      </div>
+    </aside>
+  </form>
+</div>
+
+<div class="done" id="done" hidden>
+  <div class="dinner">
+    <div class="seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+    <h2>Заказ отправлен</h2>
+    <p id="dtext">Менеджер свяжется с вами, чтобы подтвердить заказ и сроки доставки.</p>
+    <div class="receipt"><ul id="dlines"></ul><div class="tot"><span>Итого</span><span id="dsum"></span></div></div>
+    <div class="dact">
+      <a class="btn" href="https://t.me/stomatolog_uz_bot">Вернуться в Telegram</a>
+      <button type="button" class="btn line" id="again">Новый заказ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  // n8n вставляет сюда каталог из ноды «📦 Catalog». В предпросмотре null → демо-данные, заказ не отправляется.
+  var DATA = /*__PAGE_DATA__*/null;
+  var DEMO = !DATA;
+  if (DEMO) {
+    var SUT = [{ key: "size", label: "Размер", values: ["3/0", "4/0", "5/0", "6/0"], opt: "{v}", fmt: "размер {v}" }];
+    DATA = {
+      logoUrl: "",
+      categories: ["Хирургия", "Детская стоматология", "Имплантология", "Терапия", "Протезирование", "Анестезия", "Инструменты", "Расходные материалы"],
+      products: [
+        { id: "suture-pga", name: "Нить PGA", trait: "Рассасывающаяся, полигликолевая", category: "Хирургия", icon: "suture", color: "#D21F2D", price: 30000, currency: "UZS", unit: "шт.", dims: SUT },
+        { id: "suture-pdo", name: "Нить PDO", trait: "Рассасывающаяся, полидиоксанон, мононить", category: "Хирургия", icon: "suture", color: "#A2A5AC", price: 30000, currency: "UZS", unit: "шт.", dims: SUT },
+        { id: "scalpel", name: "Скальпель", trait: "Лезвия № 11, 12, 12D, 15, 15C", category: "Хирургия", icon: "scalpel", price: null, currency: "USD", unit: "шт.",
+          dims: [{ key: "blade", label: "Лезвие", values: ["11", "12", "12D", "15", "15C"], opt: "№ {v}", fmt: "№ {v}" }] },
+        { id: "crown-metal", name: "Металлические коронки Kids Krown", trait: "Корея, 5 шт. в упаковке", category: "Детская стоматология", icon: "crown", price: null, currency: "USD", unit: "уп.", packSize: 5,
+          dims: [{ key: "position", label: "Позиция", values: ["DUL", "DUR", "DLL", "DLR", "EUL", "EUR", "ELL", "ELR"], opt: "{v}", fmt: "{v}" },
+                 { key: "size", label: "Размер", values: ["2", "3", "4", "5", "6", "7"], opt: "Размер {v}", fmt: "размер {v}" }] },
+        { id: "crown-zirconia", name: "Циркониевые коронки Kids Krown", trait: "Корея, 2 шт. в упаковке", category: "Детская стоматология", icon: "crown", price: null, currency: "USD", unit: "уп.", packSize: 2,
+          dims: [{ key: "position", label: "Позиция", values: ["AL", "AR", "BL", "BR", "CL", "CR", "U"], opt: "{v}", fmt: "{v}" },
+                 { key: "size", label: "Размер", values: ["1", "2", "3", "4", "5"], opt: "Размер {v}", fmt: "размер {v}" }] },
+        { id: "implant", name: "Имплантаты", category: "Имплантология", icon: "implant", price: 7, currency: "USD", unit: "шт." },
+        { id: "abatment", name: "Абатменты", category: "Имплантология", icon: "abutment", price: 8, currency: "USD", unit: "шт." },
+        { id: "kompozit", name: "Композитные материалы", category: "Терапия", icon: "composite", price: 13, currency: "USD", unit: "шт." },
+        { id: "ottisk", name: "Оттискные материалы", category: "Протезирование", icon: "tray", price: 30, currency: "USD", unit: "шт." },
+        { id: "anest", name: "Анестетики", category: "Анестезия", icon: "syringe", price: 20, currency: "USD", unit: "шт." },
+        { id: "bory", name: "Боры стоматологические", category: "Инструменты", icon: "bur", price: 10, currency: "USD", unit: "шт." },
+        { id: "perchatki", name: "Перчатки стоматологические", category: "Расходные материалы", icon: "glove", price: 2, currency: "USD", unit: "шт." }
+      ]
+    };
+  }
+
+  // ---------- config & helpers
+  var LIST_MAX = 12;            // до стольких вариантов — показываем все сразу; больше — выбор через списки
+  var STORE_KEY = "stomatolog.clinic.v1";
+  var CUR_ORDER = ["USD", "UZS"];
+  var ICONS = {
+    suture: '<path d="M5 14a7 7 0 0 1 14 0"/><path d="M19 14c0 3.5-2.5 6-6 6-2 0-3-1-3-2.5S11 15 13 15"/><circle cx="5" cy="14" r="1.2" fill="currentColor"/>',
+    scalpel: '<path d="M3 21l8-8"/><path d="M11 13c1.5-4 5.5-8 10-9-1 4.5-5 8.5-9 10z"/>',
+    crown: '<path d="M12 5.5c-1.6-1-3.8-1.2-5.6-.4C4 6.1 3 8.5 3.5 11.2c.4 1.9 1.2 3.2 1.7 4.8.6 1.8.7 3.8 1.2 5.5.3 1.1 1 1.8 1.8 1.8 1.1 0 1.5-1 1.8-2.3.3-1.4.6-3.4 2-3.4s1.7 2 2 3.4c.3 1.3.7 2.3 1.8 2.3.8 0 1.5-.7 1.8-1.8.5-1.7.6-3.7 1.2-5.5.5-1.6 1.3-2.9 1.7-4.8.5-2.7-.5-5.1-2.9-6.1-1.8-.8-4-.6-5.6.4Z" transform="scale(.92) translate(1 -1)"/>',
+    implant: '<path d="M8.5 3h7v3.5h-7z"/><path d="M9.5 6.5l5 2-5 2 5 2-5 2 5 2"/><path d="M12 16.5V21"/>',
+    abutment: '<path d="M8 4h8l-1.2 6H9.2z"/><path d="M10 10h4v9a2 2 0 0 1-4 0z"/>',
+    composite: '<path d="M8 3h8v4H8z"/><path d="M9 7h6v8l-3 6-3-6z"/>',
+    tray: '<path d="M4 13c0-5 3.6-8.5 8-8.5S20 8 20 13"/><path d="M4 13h16"/><path d="M12 13v8"/>',
+    syringe: '<path d="M15 3l6 6"/><path d="M18 6l-9.5 9.5-3.5 1 1-3.5L15.5 3.5"/><path d="M4 20l2.5-2.5"/><path d="M11 9l4 4"/>',
+    bur: '<path d="M4 20l9.5-9.5"/><circle cx="16.5" cy="7.5" r="3.5"/>',
+    glove: '<path d="M8 21v-6.5L6 11.2a1.4 1.4 0 0 1 2.3-1.6l1.2 1.6V5a1.4 1.4 0 0 1 2.8 0v5V4a1.4 1.4 0 0 1 2.8 0v6V6a1.4 1.4 0 0 1 2.8 0v8.5c0 3.8-2.2 6.5-5.6 6.5z"/>',
+    box: '<path d="M4 8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4"/><path d="M12 12v8"/>'
+  };
+  var SVG_ICON = function (name) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || ICONS.box) + '</svg>'; };
+  var SVG_CHEV = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>';
+  var SVG_PLUS = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>';
+
+  var $ = function (id) { return document.getElementById(id); };
+  var el = function (tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  var tpl = function (s, v) { return String(s || "{v}").replace("{v}", v); };
+  var clampQty = function (v, min) { v = parseInt(v, 10); if (isNaN(v)) v = min; return Math.max(min, Math.min(999, v)); };
+  function money(n, cur) { var v = (Math.round(n * 100) / 100).toLocaleString("ru-RU"); return cur === "UZS" ? v + " сум" : v + " $"; }
+  function priceLabel(p) { return p.price == null ? "цена по запросу" : money(p.price, p.currency) + " / " + (p.unit || "шт."); }
+  function plural(n, a, b, c) { var m = n % 10, h = n % 100; return m === 1 && h !== 11 ? a : (m >= 2 && m <= 4 && (h < 12 || h > 14) ? b : c); }
+
+  function combos(p) {
+    var out = [{}];
+    (p.dims || []).forEach(function (d) {
+      var next = [];
+      out.forEach(function (o) { d.values.forEach(function (v) { var c = Object.assign({}, o); c[d.key] = v; next.push(c); }); });
+      out = next;
+    });
+    return out;
+  }
+  function mode(p) { if (!p.dims || !p.dims.length) return "single"; return combos(p).length <= LIST_MAX ? "list" : "picker"; }
+  function keyOf(p, opts) { return p.id + (p.dims ? "|" + p.dims.map(function (d) { return opts[d.key]; }).join("|") : ""); }
+  function variantText(p, opts) { return (p.dims || []).map(function (d) { return tpl(d.fmt, opts[d.key]); }).join(", "); }
+  function variantCode(p, opts) { return (p.dims || []).map(function (d) { return tpl(d.opt, opts[d.key]); }).join(" · "); }
+
+  // ---------- state: one map for every selection (simple product or variant)
+  var state = { items: new Map(), open: new Set(), q: "", cat: "" };
+  var byId = {}; DATA.products.forEach(function (p) { byId[p.id] = p; });
+  function getQty(k) { var e = state.items.get(k); return e ? e.qty : 0; }
+  function setQty(p, opts, qty) {
+    var k = keyOf(p, opts);
+    if (qty > 0) { var e = state.items.get(k); if (e) e.qty = qty; else state.items.set(k, { pid: p.id, opts: opts || {}, qty: qty }); }
+    else state.items.delete(k);
+    refreshHead(p); renderSummary();
+  }
+  function entriesOf(p) { var a = []; state.items.forEach(function (e) { if (e.pid === p.id) a.push(e); }); return a; }
+
+  // ---------- qty control: "+" at 0, stepper above 0 (one component everywhere)
+  function qtyControl(initial, onChange, label) {
+    var w = el("div", "qc");
+    var add = el("button", "addbtn"); add.type = "button"; add.innerHTML = SVG_PLUS; add.setAttribute("aria-label", "Добавить: " + label);
+    var st = el("div", "stepper"); st.setAttribute("role", "group"); st.setAttribute("aria-label", "Количество: " + label);
+    var minus = el("button", null, "−"); minus.type = "button"; minus.setAttribute("aria-label", "Меньше");
+    var inp = el("input"); inp.type = "number"; inp.inputMode = "numeric"; inp.min = "0"; inp.max = "999"; inp.setAttribute("aria-label", "Количество: " + label);
+    var plus = el("button", null, "+"); plus.type = "button"; plus.setAttribute("aria-label", "Больше");
+    st.append(minus, inp, plus); w.append(add, st);
+    var val = 0;
+    function sync(v) { val = v; inp.value = String(v); add.hidden = v > 0; st.hidden = v === 0; }
+    function set(v, focusAfter) {
+      v = clampQty(v, 0); var was = val; sync(v); onChange(v);
+      if (focusAfter && was === 0 && v > 0) plus.focus();
+      if (focusAfter && v === 0 && w.isConnected) add.focus();
+    }
+    add.onclick = function () { set(1, true); };
+    minus.onclick = function () { set(val - 1, true); };
+    plus.onclick = function () { set(val + 1, true); };
+    inp.onchange = function () { set(inp.value, true); };
+    inp.onfocus = function () { inp.select(); };
+    sync(initial);
+    return w;
+  }
+
+  // ---------- the product component
+  var heads = {};
+  function productRow(p) {
+    var m = mode(p);
+    var li = el("li", "product"); li.id = "prod-" + p.id;
+    var head = el(m === "single" ? "div" : "button", "phead");
+    var ico = el("span", "ico"); ico.innerHTML = SVG_ICON(p.icon);
+    if (p.color) { var mk = el("span", "mark"); mk.style.background = p.color; ico.append(mk); }
+    var txt = el("span", "ptext"), meta = el("span", "pmeta");
+    txt.append(el("span", "pname", p.name), meta);
+    var right = el("span", "pright");
+    head.append(ico, txt, right);
+    li.append(head);
+
+    if (m === "single") {
+      meta.textContent = [priceLabel(p), p.trait].filter(Boolean).join(" · ");
+      right.append(qtyControl(getQty(keyOf(p)), function (v) { setQty(p, null, v); }, p.name));
+      heads[p.id] = function () { li.classList.toggle("sel", getQty(keyOf(p)) > 0); };
+    } else {
+      var nVar = combos(p).length;
+      meta.textContent = [priceLabel(p), p.trait || (nVar + " " + plural(nVar, "вариант", "варианта", "вариантов"))].filter(Boolean).join(" · ");
+      var pill = el("span", "pill"), chev = el("span", "chev"); chev.innerHTML = SVG_CHEV;
+      right.append(pill, chev);
+      head.type = "button"; head.setAttribute("aria-expanded", "false"); head.setAttribute("aria-controls", "panel-" + p.id);
+      var panel = el("div", "panel"); panel.id = "panel-" + p.id;
+      var inner = el("div", "pinner"), box = el("div", "pbox"); inner.append(box); panel.append(inner); li.append(panel);
+      var built = false;
+      function setOpen(o) {
+        if (o && !built) { buildPanel(p, box, m); built = true; }
+        li.classList.toggle("open", o); head.setAttribute("aria-expanded", String(o));
+        panel.inert = !o;
+        if (o) state.open.add(p.id); else state.open.delete(p.id);
+      }
+      head.onclick = function () { setOpen(!li.classList.contains("open")); };
+      panel.inert = true;
+      if (state.open.has(p.id)) setOpen(true);
+      heads[p.id] = function () {
+        var es = entriesOf(p), units = 0; es.forEach(function (e) { units += e.qty; });
+        li.classList.toggle("sel", es.length > 0);
+        pill.textContent = "";
+        if (!es.length) { pill.textContent = "Выбрать"; return; }
+        pill.append(document.createTextNode(units + " " + p.unit));
+        pill.append(el("span", "extra", es.length > 1 ? " · " + es.length + " " + plural(es.length, "вариант", "варианта", "вариантов") : " · " + variantCode(p, es[0].opts)));
+      };
+      li._setOpen = setOpen;
+    }
+    heads[p.id]();
+    return li;
+  }
+  function refreshHead(p) { if (heads[p.id]) heads[p.id](); }
+
+  function variantRow(p, opts, flash) {
+    var k = keyOf(p, opts), row = el("li", "vrow");
+    if (flash) row.classList.add("flash");
+    var lab = el("span", "vlabel"), code = el("span", "vcode", variantCode(p, opts)), sub = el("span", "vsub");
+    function upd(v) {
+      row.classList.toggle("on", v > 0);
+      sub.textContent = v > 0
+        ? (p.packSize ? v * p.packSize + " шт. · " : "") + (p.price == null ? "цена по запросу" : money(p.price * v, p.currency))
+        : "";
+    }
+    lab.append(code, sub);
+    row.append(lab, qtyControl(getQty(k), function (v) { setQty(p, opts, v); upd(v); if (v === 0 && row._onZero) row._onZero(); }, p.name + " " + variantCode(p, opts)));
+    upd(getQty(k));
+    return row;
+  }
+
+  function buildPanel(p, box, m) {
+    box.textContent = "";
+    if (m === "list") {
+      var ul = el("ul", "vrows");
+      combos(p).forEach(function (o) { ul.append(variantRow(p, o)); });
+      box.append(ul);
+      return;
+    }
+    // picker: dropdowns for each dimension, then the same variant rows
+    var pick = el("div", "picker"), sels = {};
+    p.dims.forEach(function (d) {
+      var lab = el("label"); lab.append(el("span", null, d.label));
+      var s = el("select"); s.id = "pick-" + p.id + "-" + d.key;
+      d.values.forEach(function (v) { var o = el("option", null, tpl(d.opt, v)); o.value = v; s.append(o); });
+      lab.append(s); pick.append(lab); sels[d.key] = s;
+    });
+    var addB = el("button", "pickadd", "Добавить"); addB.type = "button"; pick.append(addB);
+    var ul2 = el("ul", "vrows"), empty = el("p", "vempty", "Выберите " + p.dims.map(function (d) { return d.label.toLowerCase(); }).join(" и ") + ", затем нажмите «Добавить».");
+    box.append(pick, ul2, empty);
+    function draw(flashKey) {
+      ul2.textContent = "";
+      var es = entriesOf(p); empty.hidden = es.length > 0;
+      es.forEach(function (e) {
+        var r = variantRow(p, e.opts, keyOf(p, e.opts) === flashKey);
+        r._onZero = function () { draw(); addB.focus(); };
+        ul2.append(r);
+      });
+    }
+    addB.onclick = function () {
+      var o = {}; p.dims.forEach(function (d) { o[d.key] = sels[d.key].value; });
+      setQty(p, o, getQty(keyOf(p, o)) + 1);
+      draw(keyOf(p, o));
+    };
+    draw();
+  }
+
+  // ---------- catalog with search + categories
+  function catsInUse() {
+    var used = {}; DATA.products.forEach(function (p) { used[p.category] = true; });
+    var order = (DATA.categories || []).filter(function (c) { return used[c]; });
+    Object.keys(used).forEach(function (c) { if (order.indexOf(c) < 0) order.push(c); });
+    return order;
+  }
+  function renderCats() {
+    var box = $("cats"); box.textContent = "";
+    [""].concat(catsInUse()).forEach(function (c) {
+      var b = el("button", null, c || "Все"); b.type = "button"; b.setAttribute("aria-pressed", String(state.cat === c));
+      b.onclick = function () { state.cat = c; renderCats(); renderCatalog(); };
+      box.append(b);
+    });
+  }
+  function norm(s) { return String(s || "").toLowerCase().replace(/ё/g, "е"); }
+  function matches(p, q) {
+    if (!q) return { ok: true, viaVariant: false };
+    var base = norm([p.name, p.trait, p.category].join(" ")).indexOf(q) > -1;
+    var variant = (p.dims || []).some(function (d) { return d.values.some(function (v) { return norm(v).indexOf(q) === 0; }); });
+    return { ok: base || variant, viaVariant: variant };
+  }
+  function renderCatalog() {
+    var list = $("catalog"); list.textContent = ""; heads = {};
+    var q = norm(state.q.trim()), shown = 0;
+    catsInUse().forEach(function (c) {
+      if (state.cat && state.cat !== c) return;
+      var ps = DATA.products.filter(function (p) { return p.category === c; }).map(function (p) { return { p: p, m: matches(p, q) }; }).filter(function (x) { return x.m.ok; });
+      if (!ps.length) return;
+      if (!state.cat) list.append(el("li", "cat-label", c));
+      ps.forEach(function (x) {
+        if (x.m.viaVariant && q) state.open.add(x.p.id);
+        list.append(productRow(x.p)); shown++;
+      });
+    });
+    $("noresult").hidden = shown > 0;
+    if (!shown) $("noresultText").textContent = state.q ? "По запросу «" + state.q.trim() + "» ничего не найдено. Проверьте написание или выберите другую категорию." : "В этой категории пока нет товаров.";
+  }
+  $("q").addEventListener("input", function (e) { state.q = e.target.value; renderCatalog(); });
+  $("resetFilter").onclick = function () { state.q = ""; state.cat = ""; $("q").value = ""; renderCats(); renderCatalog(); };
+
+  // ---------- summary
+  function collectLines() {
+    var out = [];
+    DATA.products.forEach(function (p) {
+      entriesOf(p).forEach(function (e) {
+        var v = p.dims ? " " + variantText(p, e.opts) : "";
+        out.push({ label: p.name + v + " × " + e.qty + " " + p.unit, total: p.price == null ? null : p.price * e.qty, cur: p.currency });
+      });
+    });
+    return out;
+  }
+  function totals(lines) {
+    var sums = {}, unknown = false;
+    lines.forEach(function (l) { if (l.total == null) unknown = true; else sums[l.cur] = (sums[l.cur] || 0) + l.total; });
+    var parts = CUR_ORDER.filter(function (c) { return sums[c]; }).map(function (c) { return money(sums[c], c); });
+    return { text: parts.length ? parts.join(" + ") : (unknown ? "по запросу" : "0 $"), unknown: unknown && parts.length > 0 };
+  }
+  function renderSummary() {
+    var lines = collectLines(), t = totals(lines), ul = $("slines"); ul.textContent = "";
+    if (!lines.length) ul.append(el("li", "none", "Выберите товары, и они появятся здесь."));
+    lines.forEach(function (l) { var li = el("li"); li.append(el("span", null, l.label), el("span", null, l.total == null ? "по запросу" : money(l.total, l.cur))); ul.append(li); });
+    $("scount").textContent = lines.length ? lines.length + " " + plural(lines.length, "позиция", "позиции", "позиций") + " в заказе" : "Ничего не выбрано";
+    $("ssum").textContent = t.text;
+    $("snote").hidden = !t.unknown;
+    if (lines.length) $("formerr").hidden = true;
+  }
+
+  // ---------- clinic
+  function formatPhone(v) {
+    var d = String(v || "").replace(/\D/g, "");
+    if (d.length > 9 && d.indexOf("998") === 0) d = d.slice(3);
+    d = d.slice(0, 9);
+    return [d.slice(0, 2), d.slice(2, 5), d.slice(5, 7), d.slice(7, 9)].filter(Boolean).join(" ");
+  }
+  $("phone").addEventListener("input", function (e) { var t = e.target, atEnd = t.selectionStart === t.value.length; t.value = formatPhone(t.value); if (atEnd) t.setSelectionRange(t.value.length, t.value.length); });
+  function loadClinic() { try { var s = JSON.parse(localStorage.getItem(STORE_KEY) || "null"); if (s) { $("name").value = s.name || ""; $("phone").value = formatPhone(s.phone); $("clinic").value = s.clinic || ""; $("address").value = s.address || ""; } } catch (e) {} }
+  function saveClinic(d) { try { if ($("remember").checked) localStorage.setItem(STORE_KEY, JSON.stringify(d)); else localStorage.removeItem(STORE_KEY); } catch (e) {} }
+  function setErr(id, msg) { var f = $(id); f.classList.toggle("err", !!msg); var old = f.querySelector(".ferr"); if (old) old.remove(); if (msg) f.append(el("span", "ferr", msg)); }
+  ["name", "phone", "clinic", "address"].forEach(function (k) { $(k).addEventListener("input", function () { setErr("f-" + k, ""); }); });
+  function validate() {
+    var d = { name: $("name").value.trim(), phone: $("phone").value.replace(/\D/g, ""), clinic: $("clinic").value.trim(), address: $("address").value.trim() };
+    var first = null, mark = function (k, msg) { setErr("f-" + k, msg); if (msg && !first) first = $(k); };
+    mark("name", d.name ? "" : "Укажите имя.");
+    mark("phone", d.phone.length === 9 ? "" : "Введите 9 цифр номера после +998.");
+    mark("clinic", d.clinic ? "" : "Укажите название клиники.");
+    mark("address", d.address ? "" : "Укажите адрес доставки.");
+    return { data: d, first: first };
+  }
+  function showError(msg) { var e = $("formerr"); e.textContent = msg; e.hidden = false; }
+
+  // ---------- submit
+  var chatId = (new URLSearchParams(location.search).get("chatId") || "").replace(/[^\d-]/g, "");
+  function submitUrl() { return location.pathname.replace(/\/+$/, "").replace(/[^\/]*$/, "stomatolog-zakaz-submit"); }
+  $("orderForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var lines = collectLines();
+    if (!lines.length) { showError("Добавьте хотя бы один товар."); return; }
+    var v = validate();
+    if (v.first) { v.first.focus(); v.first.scrollIntoView({ block: "center", behavior: "smooth" }); showError("Проверьте данные клиники."); return; }
+    $("formerr").hidden = true;
+    var items = []; state.items.forEach(function (e) { items.push({ id: e.pid, opts: e.opts, qty: e.qty }); });
+    var payload = { chatId: chatId, name: v.data.name, phone: "998" + v.data.phone, clinicName: v.data.clinic, clinicAddress: v.data.address, items: items };
+    saveClinic({ name: v.data.name, phone: v.data.phone, clinic: v.data.clinic, address: v.data.address });
+    var btn = $("submit"); btn.disabled = true; btn.innerHTML = '<span class="spin" aria-hidden="true"></span> Отправляем…';
+    var done = function () { btn.disabled = false; btn.textContent = "Оформить заказ"; };
+    if (DEMO) { setTimeout(function () { done(); showDone(lines); }, 700); return; }
+    var ctrl = new AbortController(), timer = setTimeout(function () { ctrl.abort(); }, 30000);
+    fetch(submitUrl(), { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), signal: ctrl.signal })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        clearTimeout(timer); done();
+        if (res.ok && res.j && res.j.ok !== false) showDone(lines);
+        else showError((res.j && res.j.error) || "Заказ не отправлен: сервер не ответил. Попробуйте ещё раз через минуту.");
+      })
+      .catch(function (err) { clearTimeout(timer); done(); showError(err && err.name === "AbortError" ? "Сервер долго не отвечает. Проверьте интернет и отправьте заказ ещё раз." : "Нет соединения. Проверьте интернет и отправьте заказ ещё раз."); });
+  });
+  function showDone(lines) {
+    var t = totals(lines), ul = $("dlines"); ul.textContent = "";
+    lines.forEach(function (l) { var li = el("li"); li.append(el("span", null, l.label), el("span", null, l.total == null ? "по запросу" : money(l.total, l.cur))); ul.append(li); });
+    $("dsum").textContent = t.text + (t.unknown ? " + позиции по запросу" : "");
+    $("dtext").textContent = chatId ? "Подтверждение с расчётом уже отправлено вам в Telegram. Менеджер свяжется с вами, чтобы согласовать доставку." : "Менеджер свяжется с вами по телефону, чтобы подтвердить заказ и сроки доставки.";
+    $("done").hidden = false; window.scrollTo(0, 0);
+  }
+  $("again").onclick = function () { state.items.clear(); state.open.clear(); renderCatalog(); renderSummary(); $("done").hidden = true; window.scrollTo(0, 0); };
+
+  // ---------- init
+  if (DEMO) $("demoNote").hidden = false;
+  if (DATA.logoUrl) { var img = el("img"); img.src = DATA.logoUrl; img.alt = "Логотип"; $("logoSlot").textContent = ""; $("logoSlot").append(img); }
+  renderCats(); renderCatalog(); renderSummary(); loadClinic();
+})();
+</script>
+
+</body></html>
