@@ -45,8 +45,8 @@ button { cursor: pointer; }
 
 /* header + logo slot */
 .top { display: grid; gap: 14px; padding-bottom: 20px; max-width: 680px; }
-.logo-slot { height: 36px; display: flex; align-items: center; }
-.logo-slot img { max-height: 36px; max-width: 180px; object-fit: contain; }
+.logo-slot { height: 48px; display: flex; align-items: center; }
+.logo-slot img { height: 48px; width: auto; max-width: 220px; object-fit: contain; object-position: left center; }
 .logo-ph { height: 36px; width: 132px; border: 1.5px dashed var(--line); border-radius: 8px; display: grid; place-items: center; color: var(--grey-mark); font-size: 13px; }
 h1 { margin: 0; font-size: clamp(28px, 6.5vw, 40px); line-height: 1.1; font-weight: 700; letter-spacing: -.025em; text-wrap: balance; }
 .lede { margin: 0; color: var(--muted); max-width: 56ch; }
@@ -214,8 +214,8 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
 
 <div class="app">
   <header class="top">
-    <!-- Логотип: укажите logoUrl в ноде «📦 Catalog» — здесь появится картинка вместо плейсхолдера -->
-    <div class="logo-slot" id="logoSlot"><div class="logo-ph">Логотип</div></div>
+    <!-- Логотип: поменять ссылку здесь (src) или в ноде «📦 Catalog» (LOGO_URL — без нового деплоя) -->
+    <div class="logo-slot" id="logoSlot"><img src="https://res.cloudinary.com/uejmwfeb/image/upload/f_auto,q_auto,h_160/v1792495030/BellamarLogo.jpg" alt="Bellamar" height="48"></div>
     <h1>Заказ материалов для клиники</h1>
     <p class="lede">Выберите товары и количество. Менеджер проверит заказ и пришлёт подтверждение в Telegram.</p>
     <p class="demo" id="demoNote" hidden>Это предпросмотр страницы: заказ никуда не отправляется.</p>
@@ -661,7 +661,7 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
 
   // ---------- init
   if (DEMO) $("demoNote").hidden = false;
-  if (DATA.logoUrl) { var img = el("img"); img.src = DATA.logoUrl; img.alt = "Логотип"; $("logoSlot").textContent = ""; $("logoSlot").append(img); }
+  if (DATA.logoUrl) { var img = el("img"); img.src = DATA.logoUrl; img.alt = "Bellamar"; img.height = 48; $("logoSlot").textContent = ""; $("logoSlot").append(img); }
   // Ссылки из Telegram-бота: ?product=<id> открывает товар, ?cat=<категория> включает фильтр
   var qp = new URLSearchParams(location.search), focusId = qp.get("product"), focusCat = qp.get("cat");
   if (focusCat && catsInUse().indexOf(focusCat) > -1) state.cat = focusCat;
