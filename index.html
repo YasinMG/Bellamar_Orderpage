@@ -303,7 +303,7 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
     var SUT = [{ key: "size", label: "Размер", values: ["3/0", "4/0", "5/0", "6/0"], opt: "{v}", fmt: "размер {v}" }];
     return {
       logoUrl: "",
-      categories: ["Хирургия", "Детская стоматология", "Имплантология", "Терапия", "Протезирование", "Анестезия", "Инструменты", "Расходные материалы"],
+      categories: ["Хирургия", "Детская стоматология", "Расходные материалы", "Инструменты"],
       products: [
         {"id": "suture-pga", "name": "Нить PGA", "trait": "Рассасывающаяся, полигликолевая", "category": "Хирургия", "icon": "suture", "color": "#D21F2D", "price": 30000, "currency": "UZS", "unit": "шт.", dims: SUT},
         {"id": "suture-pdo", "name": "Нить PDO", "trait": "Рассасывающаяся, полидиоксанон, мононить", "category": "Хирургия", "icon": "suture", "color": "#A2A5AC", "price": 30000, "currency": "UZS", "unit": "шт.", dims: SUT},
@@ -312,13 +312,8 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
         {"id": "scalpel", "name": "Скальпель", "trait": "Лезвия № 11, 12, 12D, 15, 15C", "category": "Хирургия", "icon": "scalpel", "price": null, "currency": "UZS", "unit": "шт.", "dims": [{"key": "blade", "label": "Лезвие", "values": ["11", "12", "12D", "15", "15C"], "opt": "№ {v}", "fmt": "№ {v}"}]},
         {"id": "crown-metal", "name": "Металлические коронки Kids Krown", "trait": "Корея, 5 шт. в упаковке, 60 000 сум за коронку", "category": "Детская стоматология", "icon": "crown", "price": 300000, "currency": "UZS", "unit": "уп.", "packSize": 5, "dims": [{"key": "position", "label": "Позиция", "values": ["DUL", "DUR", "DLL", "DLR", "EUL", "EUR", "ELL", "ELR"], "opt": "{v}", "fmt": "{v}"}, {"key": "size", "label": "Размер", "values": ["2", "3", "4", "5", "6", "7"], "opt": "Размер {v}", "fmt": "размер {v}"}]},
         {"id": "crown-zirconia", "name": "Циркониевые коронки Kids Krown", "trait": "Корея, 2 шт. в упаковке, 202 000 сум за коронку", "category": "Детская стоматология", "icon": "crown", "price": 404000, "currency": "UZS", "unit": "уп.", "packSize": 2, "dims": [{"key": "position", "label": "Позиция", "values": ["AL", "AR", "BL", "BR", "CL", "CR", "U"], "opt": "{v}", "fmt": "{v}"}, {"key": "size", "label": "Размер", "values": ["1", "2", "3", "4", "5"], "opt": "Размер {v}", "fmt": "размер {v}"}]},
-        {"id": "implant", "name": "Имплантаты", "category": "Имплантология", "icon": "implant", "price": 85000, "currency": "UZS", "unit": "шт."},
-        {"id": "abatment", "name": "Абатменты", "category": "Имплантология", "icon": "abutment", "price": 95000, "currency": "UZS", "unit": "шт."},
-        {"id": "kompozit", "name": "Композитные материалы", "category": "Терапия", "icon": "composite", "price": 155000, "currency": "UZS", "unit": "шт."},
-        {"id": "ottisk", "name": "Оттискные материалы", "category": "Протезирование", "icon": "tray", "price": 360000, "currency": "UZS", "unit": "шт."},
-        {"id": "anest", "name": "Анестетики", "category": "Анестезия", "icon": "syringe", "price": 240000, "currency": "UZS", "unit": "шт."},
-        {"id": "bory", "name": "Боры стоматологические", "category": "Инструменты", "icon": "bur", "price": 120000, "currency": "UZS", "unit": "шт."},
-        {"id": "perchatki", "name": "Перчатки стоматологические", "category": "Расходные материалы", "icon": "glove", "price": 24000, "currency": "UZS", "unit": "шт."}
+        {"id": "artpaper", "name": "Артикуляционная бумага Bausch", "trait": "Толщина 200, 100, 40 или 8 мк", "category": "Расходные материалы", "icon": "paper", "price": null, "currency": "UZS", "unit": "шт.", "dims": [{"key": "thickness", "label": "Толщина", "values": ["200", "100", "40", "8"], "opt": "{v} мк", "fmt": "{v} мк"}]},
+        {"id": "bory", "name": "Боры стоматологические", "category": "Инструменты", "icon": "bur", "price": 120000, "currency": "UZS", "unit": "шт."}
       ]
     };
   }
@@ -358,6 +353,7 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
     syringe: '<path d="M15 3l6 6"/><path d="M18 6l-9.5 9.5-3.5 1 1-3.5L15.5 3.5"/><path d="M4 20l2.5-2.5"/><path d="M11 9l4 4"/>',
     bur: '<path d="M4 20l9.5-9.5"/><circle cx="16.5" cy="7.5" r="3.5"/>',
     glove: '<path d="M8 21v-6.5L6 11.2a1.4 1.4 0 0 1 2.3-1.6l1.2 1.6V5a1.4 1.4 0 0 1 2.8 0v5V4a1.4 1.4 0 0 1 2.8 0v6V6a1.4 1.4 0 0 1 2.8 0v8.5c0 3.8-2.2 6.5-5.6 6.5z"/>',
+    paper: '<path d="M5 8h14v8H5z"/><path d="M5 12h14"/><path d="M8 8V5h8v3"/><path d="M8 16v3h8v-3"/>',
     box: '<path d="M4 8l8-4 8 4v8l-8 4-8-4z"/><path d="M4 8l8 4 8-4"/><path d="M12 12v8"/>'
   };
   var SVG_ICON = function (name) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || ICONS.box) + '</svg>'; };
@@ -658,7 +654,7 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
   $("again").onclick = function () { state.items.clear(); state.open.clear(); renderCatalog(); renderSummary(); $("done").hidden = true; window.scrollTo(0, 0); };
 
   // ---------- init
-  if (DEMO) $("demoNote").hidden = false;
+  if (DEMO && $("demoNote")) $("demoNote").hidden = false;
   if (DATA.logoUrl) { var img = el("img"); img.src = DATA.logoUrl; img.alt = "Bellamar"; img.height = 48; $("logoSlot").textContent = ""; $("logoSlot").append(img); }
   // Ссылки из Telegram-бота: ?product=<id> открывает товар, ?cat=<категория> включает фильтр
   var qp = new URLSearchParams(location.search), focusId = qp.get("product"), focusCat = qp.get("cat");
