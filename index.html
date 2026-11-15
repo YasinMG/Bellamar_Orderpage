@@ -312,7 +312,7 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
         {"id": "scalpel", "name": "Скальпель", "trait": "Лезвия № 11, 12, 12D, 15, 15C", "category": "Хирургия", "icon": "scalpel", "price": null, "currency": "UZS", "unit": "шт.", "dims": [{"key": "blade", "label": "Лезвие", "values": ["11", "12", "12D", "15", "15C"], "opt": "№ {v}", "fmt": "№ {v}"}]},
         {"id": "crown-metal", "name": "Металлические коронки Kids Krown", "trait": "Корея, 5 шт. в упаковке, 60 000 сум за коронку", "category": "Детская стоматология", "icon": "crown", "price": 300000, "currency": "UZS", "unit": "уп.", "packSize": 5, "dims": [{"key": "position", "label": "Позиция", "values": ["DUL", "DUR", "DLL", "DLR", "EUL", "EUR", "ELL", "ELR"], "opt": "{v}", "fmt": "{v}"}, {"key": "size", "label": "Размер", "values": ["2", "3", "4", "5", "6", "7"], "opt": "Размер {v}", "fmt": "размер {v}"}]},
         {"id": "crown-zirconia", "name": "Циркониевые коронки Kids Krown", "trait": "Корея, 2 шт. в упаковке, 202 000 сум за коронку", "category": "Детская стоматология", "icon": "crown", "price": 404000, "currency": "UZS", "unit": "уп.", "packSize": 2, "dims": [{"key": "position", "label": "Позиция", "values": ["AL", "AR", "BL", "BR", "CL", "CR", "U"], "opt": "{v}", "fmt": "{v}"}, {"key": "size", "label": "Размер", "values": ["1", "2", "3", "4", "5"], "opt": "Размер {v}", "fmt": "размер {v}"}]},
-        {"id": "artpaper", "name": "Артикуляционная бумага Bausch", "trait": "Толщина 200, 100, 40 или 8 мк", "category": "Расходные материалы", "icon": "paper", "price": null, "currency": "UZS", "unit": "шт.", "dims": [{"key": "thickness", "label": "Толщина", "values": ["200", "100", "40", "8"], "opt": "{v} мк", "fmt": "{v} мк"}]},
+        {"id": "artpaper", "name": "Артикуляционная бумага Bausch", "trait": "Толщина 200, 100, 40 или 8 мк", "category": "Расходные материалы", "icon": "paper", "price": 250000, "variantPrices": {"200": 400000, "100": 400000, "40": 250000, "8": 270000}, "currency": "UZS", "unit": "шт.", "dims": [{"key": "thickness", "label": "Толщина", "values": ["200", "100", "40", "8"], "opt": "{v} мк", "fmt": "{v} мк"}]},
         {"id": "bory", "name": "Боры стоматологические", "category": "Инструменты", "icon": "bur", "price": 120000, "currency": "UZS", "unit": "шт."}
       ]
     };
@@ -365,7 +365,8 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
   var tpl = function (s, v) { return String(s || "{v}").replace("{v}", v); };
   var clampQty = function (v, min) { v = parseInt(v, 10); if (isNaN(v)) v = min; return Math.max(min, Math.min(999, v)); };
   function money(n, cur) { var v = (Math.round(n * 100) / 100).toLocaleString("ru-RU"); return cur === "UZS" ? v + " сум" : v + " $"; }
-  function priceLabel(p) { return p.price == null ? "цена по запросу" : money(p.price, p.currency) + " / " + (p.unit || "шт."); }
+  function priceLabel(p) { return p.price == null ? "цена по запросу" : (p.variantPrices ? "от " : "") + money(p.price, p.currency) + " / " + (p.unit || "шт."); }
+  function priceOf(p, opts) { var k = (p.dims || []).map(function (d) { return (opts || {})[d.key]; }).join("|"); return p.variantPrices && p.variantPrices[k] != null ? p.variantPrices[k] : p.price; }
   function plural(n, a, b, c) { var m = n % 10, h = n % 100; return m === 1 && h !== 11 ? a : (m >= 2 && m <= 4 && (h < 12 || h > 14) ? b : c); }
 
   function combos(p) {
@@ -477,7 +478,7 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
     function upd(v) {
       row.classList.toggle("on", v > 0);
       sub.textContent = v > 0
-        ? (p.packSize ? v * p.packSize + " шт. · " : "") + (p.price == null ? "цена по запросу" : money(p.price * v, p.currency))
+        ? (p.packSize ? v * p.packSize + " шт. · " : "") + (priceOf(p, opts) == null ? "цена по запросу" : money(priceOf(p, opts) * v, p.currency))
         : "";
     }
     lab.append(code, sub);
@@ -569,7 +570,7 @@ select:hover, .input:hover { border-color: var(--grey-mark); }
     DATA.products.forEach(function (p) {
       entriesOf(p).forEach(function (e) {
         var v = p.dims ? " " + variantText(p, e.opts) : "";
-        out.push({ label: p.name + v + " × " + e.qty + " " + p.unit, total: p.price == null ? null : p.price * e.qty, cur: p.currency });
+        out.push({ label: p.name + v + " × " + e.qty + " " + p.unit, total: priceOf(p, e.opts) == null ? null : priceOf(p, e.opts) * e.qty, cur: p.currency });
       });
     });
     return out;
